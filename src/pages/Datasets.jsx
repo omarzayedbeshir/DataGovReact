@@ -4,9 +4,6 @@ import { getDatasets } from '../lib/api'
 import { PageHeader, Spinner, EmptyState, ErrorMsg } from '../components/ui'
 import { Search, Database, Filter, X, ChevronRight, ChevronLeft } from 'lucide-react'
 
-const FORMATS  = ['','CSV','JSON','XML','PDF','XLS','XLSX','ZIP','KML','RDF','HTML']
-const ORG_TYPES = ['','Federal Government','State Government','City Government','University','Non-profit']
-
 export default function Datasets() {
   const navigate = useNavigate()
   const [datasets, setDatasets] = useState([])
@@ -68,30 +65,24 @@ export default function Datasets() {
         <div className="card-glow p-5 mb-6 fade-up">
           <p className="section-title mb-4">Filter Datasets</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label className="label">Tag</label>
-              <div className="relative">
-                <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                <input
-                  className="input pl-8"
-                  placeholder="e.g. health, energy…"
-                  value={pending.tag}
-                  onChange={e => setPending(p => ({ ...p, tag: e.target.value }))}
-                />
+            {[
+              { key: 'tag',      label: 'Tag',               placeholder: 'e.g. health, energy…' },
+              { key: 'format',   label: 'File Format',       placeholder: 'e.g. CSV, JSON, XML…' },
+              { key: 'org_type', label: 'Organization Type', placeholder: 'e.g. Federal, University…' },
+            ].map(({ key, label, placeholder }) => (
+              <div key={key}>
+                <label className="label">{label}</label>
+                <div className="relative">
+                  <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                  <input
+                    className="input pl-8"
+                    placeholder={placeholder}
+                    value={pending[key]}
+                    onChange={e => setPending(p => ({ ...p, [key]: e.target.value }))}
+                  />
+                </div>
               </div>
-            </div>
-            <div>
-              <label className="label">File Format</label>
-              <select className="input" value={pending.format} onChange={e => setPending(p => ({ ...p, format: e.target.value }))}>
-                {FORMATS.map(f => <option key={f} value={f}>{f || 'All formats'}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="label">Organization Type</label>
-              <select className="input" value={pending.org_type} onChange={e => setPending(p => ({ ...p, org_type: e.target.value }))}>
-                {ORG_TYPES.map(o => <option key={o} value={o}>{o || 'All types'}</option>)}
-              </select>
-            </div>
+            ))}
           </div>
           <div className="flex gap-2 mt-4">
             <button onClick={applyFilters} className="btn-primary">Apply filters</button>
@@ -103,8 +94,8 @@ export default function Datasets() {
       {/* Active filter badges */}
       {hasFilters && (
         <div className="flex gap-2 mb-4 flex-wrap">
-          {filters.tag     && <span className="cyan-pill">tag: {filters.tag}</span>}
-          {filters.format  && <span className="cyan-pill">format: {filters.format}</span>}
+          {filters.tag      && <span className="cyan-pill">tag: {filters.tag}</span>}
+          {filters.format   && <span className="cyan-pill">format: {filters.format}</span>}
           {filters.org_type && <span className="cyan-pill">org: {filters.org_type}</span>}
         </div>
       )}
