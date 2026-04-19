@@ -52,7 +52,7 @@ export default function Stats() {
       setByOrg(org)
       setByTopic(topic)
       setByFormat(fmt)
-      setByOrgType(orgType)
+      setByOrgType(orgType.map(d => ({ ...d, label: d.label?.trim() || 'N/A' })))
       setTagsByProj(tags)
     }).finally(() => setLoading(false))
   }, [])
